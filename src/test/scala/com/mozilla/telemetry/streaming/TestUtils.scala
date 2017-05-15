@@ -32,7 +32,14 @@ object TestUtils {
            |  "buildId": "${application.buildId}",
            |  "version": "${application.version}"
            |}""".stripMargin,
-      "environment.system" ->"""{"os": {"name": "Linux", "version": "42"}}"""
+      "environment.settings" ->"""{"e10sEnabled": true, "e10sCohort": "test"}""",
+      "environment.system" ->
+        """
+          |{
+          | "os": {"name": "Linux", "version": "42"},
+          | "gfx": {"features": {"compositor": "opengl"}}
+          |}""".stripMargin,
+      "environment.addons" ->"""{"activeExperiment": {"id": "experiment1", "branch": "control"}}"""
     )
     val outputMap = fieldsOverride match {
       case Some(m) => defaultMap ++ m
@@ -64,7 +71,14 @@ object TestUtils {
       // Timestamp is in nanoseconds
       "Timestamp" -> (1460036116829920000L),
       "submissionDate" -> "2017-01-01",
-      "environment.system" ->"""{"os": {"name": "Linux", "version": "42"}}""",
+      "environment.settings" ->"""{"e10sEnabled": true, "e10sCohort": "test"}""",
+      "environment.system" ->
+        """
+          |{
+          | "os": {"name": "Linux", "version": "42"},
+          | "gfx": {"features": {"compositor": "opengl"}}
+          |}""".stripMargin,
+      "environment.addons" ->"""{"activeExperiment": {"id": "experiment1", "branch": "control"}}""",
       "environment.build" ->
         s"""
            |{
