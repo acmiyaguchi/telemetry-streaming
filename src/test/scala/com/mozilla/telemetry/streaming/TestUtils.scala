@@ -15,6 +15,9 @@ object TestUtils {
     "x86", "20170101000000", "release", "Firefox", "42.0", "Mozilla", "42.0", "x86-msvc"
   )
   private val applicationJson = compact(render(Extraction.decompose(application)))
+  val scalarValue = 42
+  val testTimestampNano = 1460036116829920000L
+  val testTimestampMillis = testTimestampNano / 1000000
 
   def generateCrashMessages(size: Int, fieldsOverride: Option[Map[String, Any]]=None): Seq[Message] = {
     val defaultMap = Map(
@@ -26,7 +29,7 @@ object TestUtils {
       "geoCountry" -> "IT",
       "os" -> "Linux",
       // Timestamp is in nanoseconds
-      "Timestamp" -> 1460036116829920000L,
+      "Timestamp" -> testTimestampNano,
       "submissionDate" -> "2017-01-01",
       "environment.build" ->
         s"""
@@ -72,7 +75,7 @@ object TestUtils {
       "geoCountry" -> "IT",
       "os" -> "Linux",
       // Timestamp is in nanoseconds
-      "Timestamp" -> (1460036116829920000L),
+      "Timestamp" -> testTimestampNano,
       "submissionDate" -> "2017-01-01",
       "environment.settings" ->"""{"e10sEnabled": true, "e10sCohort": "test"}""",
       "environment.system" ->
