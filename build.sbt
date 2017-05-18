@@ -24,7 +24,8 @@ lazy val root = (project in file(".")).
     libraryDependencies += "org.apache.spark" %% "spark-sql-kafka-0-10" % sparkVersion,
     libraryDependencies += "org.rogach" %% "scallop" % "1.0.2",
     libraryDependencies += "com.google.protobuf" % "protobuf-java" % "2.5.0",
-    libraryDependencies += "joda-time" % "joda-time" % "2.9.2"
+    libraryDependencies += "joda-time" % "joda-time" % "2.9.2",
+    libraryDependencies += "edu.stanford.futuredata" % "macrobase-lib" % "0.2.0"
   )
 
 // make run command include the provided dependencies
