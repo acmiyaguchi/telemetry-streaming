@@ -120,6 +120,18 @@ object AnomalyExplainer {
       pings
     }
 
+    val median = spark
+      .createDataset(classifierReservoir)
+      .toDF("latency")
+      .stat.approxQuantile("latency", Array(0.5), 0.01)(0)
+    val MAD = pings
+      .select(F.abs(F.col("latency")-F.lit(median)).alias("residual"))
+      .stat.approxQuantile("residual", Array(0.5), 0.01)(0)
+
+    // score pings using a modified Z-score using median and MAD instead of mean and standard deviation
+    val scoredPings = pings.withColumn("score", (F.col("latency")-F.lit(median))/F.lit(MAD))
+
+
     // TODO P1: classify and data points based on percentile cutoffs
     // TODO P1: add sliding window summarizer that closely follows spark streaming windows
     val outlierSummarizer = new IncrementalSummarizer()
