@@ -5,6 +5,7 @@ import java.util
 import scala.collection.JavaConverters._
 import scala.collection.mutable
 import com.mozilla.telemetry.timeseries.SchemaBuilder
+import edu.stanford.futuredata.macrobase.analysis.classify.PercentileClassifier
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.{DataFrame, functions => F}
 import org.rogach.scallop.{ScallopConf, ScallopOption}
@@ -131,8 +132,22 @@ object AnomalyExplainer {
     // score pings using a modified Z-score using median and MAD instead of mean and standard deviation
     val scoredPings = pings.withColumn("score", (F.col("latency")-F.lit(median))/F.lit(MAD))
 
+    // Specify the schema for the macrobase dataframe
+    val columnTypes: Map[String, ColType] = {
+      (dimensionsSchema.fieldNames map ((_, ColType.STRING))) ++ List(("score", ColType.DOUBLE))
+    }.toMap
 
-    // TODO P1: classify and data points based on percentile cutoffs
+    val columns = columnTypes.keys.toSeq.map(F.col(_))
+    val loader = new SparkDataFrameLoader(scoredPings.select(columns: _*)).setColumnTypes(columnTypes.asJava)
+    val sourceData: MBDataFrame = loader.load()
+
+    // classify data points based on percentile cuttoffs over score
+    val classifier = new PercentileClassifier("score")
+    classifier.setPercentile(2.0)
+    classifier.setOutputColumnName("outlier")
+    val labeledData = classifier.process(sourceData)
+
+
     // TODO P1: add sliding window summarizer that closely follows spark streaming windows
     val outlierSummarizer = new IncrementalSummarizer()
     //outlierSummarizer.setAttributes(attributes)
